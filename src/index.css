@@ -1,5 +1,46 @@
+:root {
+  /* spacings */
+  --very-small-spacing: 4px;
+  --small-spacing: 8px;
+  --medium-spacing: 12px;
+  --standard-spacing: 16px;
+}
+
+/* universal resets */
 * {
    margin: 0;
    padding: 0;
    box-sizing: border-box;
+}
+
+a, a:focus, a:hover {
+  text-decoration: none;
+}
+
+button {
+  outline: none;
+  border: none;
+  cursor: pointer;
+}
+
+/* helper classes */
+.w-100 {
+  width: 100%;
+}
+
+.flex {
+  display: flex;
+}
+
+.flex-col {
+  display: flex;
+  flex-direction: column;
+}
+
+.al-cen {
+  align-items: center;
+}
+
+.jus-cen {
+  justify-content: center;
 }
