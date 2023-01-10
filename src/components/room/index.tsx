@@ -8,7 +8,18 @@ const Room = () => {
 
   useEffect(() => {
     if (!roomId) return;
+
+    const newUserConnected = () => {
+      console.log("new user yeyyyy!!");
+    };
+
     socket.emit("joinRoom", { roomId });
+
+    socket.on("userConnected", newUserConnected);
+
+    return () => {
+      socket.off("userConnected", newUserConnected);
+    };
   }, [roomId]);
 
   return (

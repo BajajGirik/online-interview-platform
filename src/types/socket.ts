@@ -15,7 +15,7 @@ export type ClientToServerEvents = {
  * by the client side
  */
 export type ServerToClientEvents = {
-  me: (message: string) => void;
+  userConnected: () => void;
 };
 
 /************** Types for listeners parameters ******************/
