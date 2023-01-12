@@ -45,3 +45,12 @@ export const toggleVideoStream = (stream?: MediaStream) => {
 
   videoStream.enabled = !videoStream.enabled;
 };
+
+/**
+ * Helper getter method to retreive media stream from ref with correct type definitions
+ */
+export const getMediaStreamFromRef = (
+  videoRef: React.RefObject<HTMLVideoElement | null>
+): MediaStream | undefined => {
+  return videoRef.current?.srcObject ? (videoRef.current?.srcObject as MediaStream) : undefined;
+};

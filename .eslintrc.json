@@ -20,6 +20,8 @@
         "@typescript-eslint"
     ],
     "rules": {
-       "react/display-name": "off"
+       "react/display-name": "off",
+        "no-empty-function": "off",
+        "@typescript-eslint/no-empty-function": "off"
     }
 }
