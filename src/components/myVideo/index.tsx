@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback, useContext } from "react";
+import React, { useEffect, useState, useCallback, useRef } from "react";
 import {
   getUserMediaStream,
   removeAllStreams,
@@ -6,12 +6,11 @@ import {
   removeVideoStream
 } from "../../utils/navigator";
 import CustomVideo from "../customVideo";
-import { SocketContext } from "../../context";
 
 const MyVideo = () => {
   const [isMuted, setIsMuted] = useState(false);
   const [isCameraOff, setIsCameraOff] = useState(false);
-  const { myVideoStream } = useContext(SocketContext);
+  const myVideoStream = useRef<HTMLVideoElement>(null);
 
   /**
    * @returns a boolean value indicating whether setting the

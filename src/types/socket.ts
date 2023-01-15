@@ -6,6 +6,7 @@
  */
 export type ClientToServerEvents = {
   joinRoom: (params: JoinRoomParamsType) => void;
+  requestJoin: (roomIdToJoin: string, userIdToJoin: string) => void;
 };
 
 /**
@@ -16,6 +17,8 @@ export type ClientToServerEvents = {
  */
 export type ServerToClientEvents = {
   userConnected: () => void;
+  joinRequestAccept: () => void;
+  joinRequestReject: () => void;
 };
 
 /************** Types for listeners parameters ******************/
