@@ -4,6 +4,9 @@
   --small-spacing: 8px;
   --medium-spacing: 12px;
   --standard-spacing: 16px;
+  /* colors */
+  --primary-color: #008B8B;
+  --error-color: red;
 }
 
 /* universal resets */
@@ -23,9 +26,17 @@ button {
   cursor: pointer;
 }
 
+input {
+    outline: none;
+}
+
 /* helper classes */
 .w-100 {
   width: 100%;
+}
+
+.txt-cen {
+  text-align: center;
 }
 
 .flex {
