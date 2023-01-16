@@ -11,10 +11,14 @@ export type UserSignupRequest = UserSigninRequest & {
 };
 
 /*********** Response Types ***********/
-export type UserSigninResponse = {
-  name: string;
-  email: string;
+export type UserAuthResponse = {
+  userProfile: UserProfile;
   token: string;
 };
 
-export type UserSignupResponse = UserSigninResponse;
+/*********** Extra Types ***********/
+export type UserProfile = {
+  _id: string;
+  name: string;
+  email: string;
+};

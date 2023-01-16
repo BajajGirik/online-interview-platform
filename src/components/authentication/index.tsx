@@ -1,6 +1,8 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { Link } from "react-router-dom";
+import { signin_api, signup_api } from "../../api";
 import { AppRoutes, Strings } from "../../constants";
+import UserContext from "../../context/userContext";
 import styles from "../../styles/authForm.module.css";
 import { UserSigninRequest, UserSignupRequest } from "../../types/api";
 
@@ -9,6 +11,7 @@ type Props = {
 };
 
 const AuthForm = ({ signup }: Props) => {
+  const userContextData = useContext(UserContext);
   const [user, setUser] = useState<UserSignupRequest | UserSigninRequest>({
     email: "",
     password: ""
@@ -19,8 +22,16 @@ const AuthForm = ({ signup }: Props) => {
     setUser(prev => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    try {
+      let userData;
+      if (signup) userData = await signup_api(user as UserSignupRequest);
+      else userData = await signin_api(user);
+      userContextData.onChangeUser(userData);
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   return (
