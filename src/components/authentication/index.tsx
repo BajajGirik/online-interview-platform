@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
+import styles from "../../styles/authForm.module.css";
 import { UserSigninRequest, UserSignupRequest } from "../../types/api";
 
 type Props = {
@@ -11,18 +12,22 @@ const AuthForm = ({ signup }: Props) => {
     email: "",
     password: ""
   });
+  const userSignUpInfo = user as UserSignupRequest;
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setUser(prev => ({ ...prev, [e.target.name]: e.target.value }));
   };
+
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
   };
-  const userSignUpInfo = user as UserSignupRequest;
+
   return (
-    <div>
-      <form onSubmit={handleSubmit}>
+    <div className={styles.container}>
+      <h2>{signup ? "Sign Up" : "Sign In"}</h2>
+      <form onSubmit={handleSubmit} className="flex-col gap-small">
         {signup && (
-          <div>
+          <>
             <input
               name="firstName"
               type="text"
@@ -35,7 +40,7 @@ const AuthForm = ({ signup }: Props) => {
               value={userSignUpInfo.lastName}
               onChange={handleChange}
             />
-          </div>
+          </>
         )}
         <input name="email" type="email" value={user.email} onChange={handleChange} />
         <input name="password" type="password" value={user.password} onChange={handleChange} />

@@ -37,6 +37,10 @@ button {
   flex-direction: column;
 }
 
+.gap-small {
+	gap: var(--small-spacing);
+}
+
 .al-cen {
   align-items: center;
 }
