@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import { Strings } from "../../constants";
+import { AppRoutes, Strings } from "../../constants";
 import styles from "../../styles/authForm.module.css";
 import { UserSigninRequest, UserSignupRequest } from "../../types/api";
 
@@ -79,11 +79,12 @@ const AuthForm = ({ signup }: Props) => {
       </form>
       {signup ? (
         <p>
-          {Strings.authPage.existingUser} <Link to="/signin">{Strings.authPage.signIn}</Link>
+          {Strings.authPage.existingUser}{" "}
+          <Link to={AppRoutes.signIn}>{Strings.authPage.signIn}</Link>
         </p>
       ) : (
         <p>
-          {Strings.authPage.newUser} <Link to="/signup">{Strings.authPage.signUp}</Link>
+          {Strings.authPage.newUser} <Link to={AppRoutes.signUp}>{Strings.authPage.signUp}</Link>
         </p>
       )}
     </div>

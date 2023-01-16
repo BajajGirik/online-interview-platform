@@ -23,3 +23,10 @@ export const ErrorMessages = {
   passwordMismatch: "Passwords don't match",
   emptyField: "Field cannot be empty"
 };
+
+export const AppRoutes = {
+  home: "/",
+  signUp: "/signUp",
+  signIn: "/signIn",
+  room: (roomId?: string) => "/room/" + (roomId ?? ":roomId")
+};
