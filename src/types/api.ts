@@ -21,4 +21,6 @@ export type UserProfile = {
   _id: string;
   name: string;
   email: string;
+  is_active: string;
+  allowed_rooms: string[];
 };

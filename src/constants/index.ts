@@ -13,6 +13,12 @@ export const Strings = {
     signIn: "Sign In",
     newUser: "New User",
     existingUser: "Existing User?"
+  },
+  homePage: {
+    heading: "Online Interview Platform",
+    createRoom: "Create a room",
+    logout: "Logout",
+    logoutButtonContent: "user kithe gya"
   }
 };
 
@@ -26,7 +32,7 @@ export const ErrorMessages = {
 
 export const AppRoutes = {
   home: "/",
-  signUp: "/signUp",
-  signIn: "/signIn",
+  signUp: "/signup",
+  signIn: "/signin",
   room: (roomId?: string) => "/room/" + (roomId ?? ":roomId")
 };

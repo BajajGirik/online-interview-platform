@@ -1,7 +1,8 @@
 import React, { useEffect, useState, createContext } from "react";
 import { UserProfile, UserAuthResponse } from "../types/api";
-import { LOCAL_STORAGE_KEY } from "../constants";
+import { AppRoutes, LOCAL_STORAGE_KEY } from "../constants";
 import { autoLogin_api } from "../api";
+import { redirect } from "react-router-dom";
 
 type Props = {
   children: React.ReactNode;
@@ -61,6 +62,12 @@ export const UserContextProvider = ({ children }: Props) => {
     };
     autoLogin();
   }, []);
+
+  useEffect(() => {
+    if (isLoading) return;
+    if (!user) redirect(AppRoutes.signIn);
+    if (user) redirect(AppRoutes.home);
+  }, [user, isLoading]);
 
   return (
     <UserContext.Provider
