@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { AppRoutes, Strings } from "../../constants";
 import UserContext from "../../context/userContext";
 import { createRoom_api, joinRoom_api } from "../../api";
+import styles from "../../styles/home.module.css";
 
 const Home = () => {
   const [roomIdToJoin, setRoomIdToJoin] = useState("");
@@ -41,7 +42,7 @@ const Home = () => {
 
     try {
       const createdRoomId = await createRoom_api({ hostEmail: user.email, intervieweeEmail });
-      navigate(createdRoomId);
+      navigate(AppRoutes.room(createdRoomId));
     } catch (err) {
       console.error(err);
       alert(Strings.homePage.errors.createRoomFailed);
@@ -49,36 +50,30 @@ const Home = () => {
   };
 
   return (
-    <div className="flex-col home__container">
+    <div className={`flex-col ${styles.home__container}`}>
       <h1> {Strings.homePage.heading} </h1>
 
-      <div className="home__createJoinRoomContainer flex-col">
-        <input
-          type="email"
-          value={intervieweeEmail}
-          onChange={e => setIntervieweeEmail(e.target.value)}
-          placeholder="interviewee's email"
-        />
-        <button onClick={handleCreateRoom} className="btn">
-          {Strings.homePage.createRoom}
-        </button>
+      <div className={`flex s${styles.home__roomContainer}`}>
+        <div className={`${styles.home__createJoinRoomContainer} flex-col`}>
+          <input
+            type="email"
+            value={intervieweeEmail}
+            onChange={e => setIntervieweeEmail(e.target.value)}
+            placeholder="interviewee's email"
+          />
+          <button onClick={handleCreateRoom}>{Strings.homePage.createRoom}</button>
+        </div>
+        <div className={`${styles.home__createJoinRoomContainer} flex-col`}>
+          <input
+            type="text"
+            value={roomIdToJoin}
+            onChange={e => setRoomIdToJoin(e.target.value)}
+            placeholder="room id"
+          />
+          <button onClick={handleJoinRoom}>{Strings.homePage.joinRoom}</button>
+        </div>
       </div>
-
-      <div className="home__createJoinRoomContainer flex-col">
-        <input
-          type="text"
-          value={roomIdToJoin}
-          onChange={e => setRoomIdToJoin(e.target.value)}
-          placeholder="room id"
-        />
-        <button onClick={handleJoinRoom} className="btn">
-          {Strings.homePage.joinRoom}
-        </button>
-      </div>
-
-      <button onClick={logout} className="btn">
-        {Strings.homePage.logout}
-      </button>
+      <button onClick={logout}>{Strings.homePage.logout}</button>
     </div>
   );
 };

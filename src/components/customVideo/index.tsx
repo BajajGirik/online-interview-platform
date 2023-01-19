@@ -10,8 +10,8 @@ type Props = {
   isSelfVideo: boolean;
   isMuted: boolean;
   isCameraOff: boolean;
-  toggleMute: () => void;
-  toggleCamera: () => void;
+  toggleMute?: () => void;
+  toggleCamera?: () => void;
 };
 
 const CustomVideo = React.forwardRef<HTMLVideoElement, Props>((props, ref) => {

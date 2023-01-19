@@ -5,3 +5,12 @@
     justify-content: center;
     align-items: center;
 }
+
+.home__roomContainer {
+    gap: var(--small-spacing);
+    height: 30vh;
+}
+
+.home__createJoinRoomContainer {
+    
+}

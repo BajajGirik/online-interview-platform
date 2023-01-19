@@ -2,16 +2,18 @@ import React, { useEffect, useState, useRef } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import socket from "../../config/socket";
 import MyVideo from "../myVideo";
+import CustomVideo from "../customVideo";
 import Peer from "simple-peer";
 import { useContext } from "react";
 import UserContext from "../../context/userContext";
 import { AppRoutes, Strings } from "../../constants";
 import { joinRoom_api } from "../../api";
 import { getMediaStreamFromRef } from "../../utils/navigator";
+// import styles from "../"
 
 const Room = () => {
   const { roomId } = useParams();
-  const { user } = useContext(UserContext);
+  const { user, isLoading } = useContext(UserContext);
   const navigate = useNavigate();
   const myVideoStream = useRef<HTMLVideoElement>(null);
   const otherVideoStream = useRef<HTMLVideoElement>(null);
@@ -20,6 +22,8 @@ const Room = () => {
   useEffect(() => {
     // join room validation
     const joinRoomValidation = async () => {
+      if (isLoading) return;
+
       if (!user) {
         alert(Strings.homePage.errors.loginToPerformAction);
         return navigate(AppRoutes.signIn);
@@ -44,7 +48,7 @@ const Room = () => {
       }
     };
     joinRoomValidation();
-  }, [roomId, user]);
+  }, [isLoading, roomId, user]);
 
   /**
    * @returns unsubscribe function that can be called to
@@ -53,11 +57,7 @@ const Room = () => {
   const handleSocketListenersForJoinedRoom = () => {
     if (!roomId || !user) return;
 
-    // User has joined the room
-    // First up, inform everyone that he has joined room
-    socket.emit("joinRoom", { email: user.email, roomId });
-
-    // Also set up a listener for to listen when someone
+    // Set up a listener for to listen when someone
     // else joins the room
     socket.on("userJoined", params => {
       console.log(`${params.email} connected...`);
@@ -73,6 +73,7 @@ const Room = () => {
     });
 
     peer.on("signal", data => {
+      console.log("SendSignal");
       socket.emit("sendSignal", { signal: data, email: user.email, roomId });
     });
 
@@ -87,6 +88,7 @@ const Room = () => {
     // connection. Now let's also add some listeners to
     // listen to someone else signaling when they join
     socket.on("receiveSignal", params => {
+      console.log("ReceiveSignal");
       const peer = new Peer({
         initiator: false,
         trickle: false,
@@ -109,6 +111,10 @@ const Room = () => {
       peer.signal(params.signal);
     });
 
+    // User has joined the room
+    // First up, inform everyone that he has joined room
+    socket.emit("joinRoom", { email: user.email, roomId });
+
     // Unsubscribe from socket listeners
     return () => {
       socket.off("userJoined");
@@ -123,8 +129,9 @@ const Room = () => {
   }, [validated]);
 
   return (
-    <div>
+    <div className="flex gap-standard">
       <MyVideo myVideoStream={myVideoStream} />
+      <CustomVideo ref={otherVideoStream} isMuted={false} isCameraOff={false} isSelfVideo={false} />
     </div>
   );
 };
