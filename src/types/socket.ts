@@ -5,8 +5,20 @@
  * by the server side
  */
 export type ClientToServerEvents = {
+  /**
+   * Basic event fired from client at first to share that
+   * user connected. Just a notification event, nothing else
+   */
   joinRoom: (params: JoinRoomParamsType) => void;
-  requestJoin: (roomIdToJoin: string, userIdToJoin: string) => void;
+
+  /**
+   * Functionality driven:
+   * This is the first step happening when we want to communicate
+   * and send data between peers.
+   */
+  sendSignal: (params: SendSignalParamsType) => void;
+
+  sendPiggyBackSignal: (params: PiggyBackParamsType) => void;
 };
 
 /**
@@ -16,12 +28,46 @@ export type ClientToServerEvents = {
  * by the client side
  */
 export type ServerToClientEvents = {
-  userConnected: () => void;
-  joinRequestAccept: () => void;
-  joinRequestReject: () => void;
+  /**
+   * Basic event fired by server to share that
+   * user connected. Just a notification event, nothing else
+   */
+  userJoined: (params: UserJoinedParamsType) => void;
+
+  /**
+   * After a user send's signal to server, an event "receiveSignal"
+   * is emitted to the user who was meant to receive this signal
+   */
+  receiveSignal: (params: ReceiverSignalParamsType) => void;
+
+  acknowledgeSignal: (params: AcknowledgeSignalParamsType) => void;
 };
 
 /************** Types for listeners parameters ******************/
 export type JoinRoomParamsType = {
   roomId: string;
+  email: string;
 };
+
+export type UserJoinedParamsType = {
+  email: string;
+};
+
+export type SendSignalParamsType = {
+  // TODO: Remove type "any"
+  signal: any;
+  roomId: string;
+  email: string;
+  // Since we are implementing a two client meeting
+  // We don't necessarily need the receiverId as we
+  // can easily get that from DB.
+};
+
+export type ReceiverSignalParamsType = {
+  // TODO: Remove type "any"
+  signal: any;
+};
+
+export type PiggyBackParamsType = SendSignalParamsType;
+
+export type AcknowledgeSignalParamsType = ReceiverSignalParamsType;

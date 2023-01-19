@@ -1,80 +1,131 @@
-import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import React, { useEffect, useState, useRef } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import socket from "../../config/socket";
 import MyVideo from "../myVideo";
+import Peer from "simple-peer";
+import { useContext } from "react";
+import UserContext from "../../context/userContext";
+import { AppRoutes, Strings } from "../../constants";
+import { joinRoom_api } from "../../api";
+import { getMediaStreamFromRef } from "../../utils/navigator";
 
 const Room = () => {
-  // TODO: Set hasJoinedRoom initially to false and make a
-  // socket handler for this
-  const [hasJoinedRoom, setHasJoinedRoom] = useState(false);
   const { roomId } = useParams();
+  const { user } = useContext(UserContext);
+  const navigate = useNavigate();
+  const myVideoStream = useRef<HTMLVideoElement>(null);
+  const otherVideoStream = useRef<HTMLVideoElement>(null);
+  const [validated, setValidated] = useState(false);
 
-  /**
-   * @returns unsubscribe function that can be called to
-   * unsubbscribe from the events that this function listened to
-   */
-  const handleSocketListenersForNonJoinedRoom = () => {
-    if (!roomId) return;
+  useEffect(() => {
+    // join room validation
+    const joinRoomValidation = async () => {
+      if (!user) {
+        alert(Strings.homePage.errors.loginToPerformAction);
+        return navigate(AppRoutes.signIn);
+      }
+      if (!roomId) {
+        alert(Strings.homePage.errors.roomIdEmpty);
+        return navigate(AppRoutes.home);
+      }
 
-    // listener functions
-    const onJoinRequestAccept = () => {
-      alert("bohot shukriya, badi meherbani...");
-      // create peer mesh
-      //...
-      setHasJoinedRoom(true);
+      try {
+        const allowed = await joinRoom_api({ email: user.email, roomId: roomId });
+        if (!allowed) {
+          alert(Strings.homePage.errors.notAllowedToJoinRoom);
+          navigate(AppRoutes.home);
+          setValidated(false);
+        } else {
+          setValidated(true);
+        }
+      } catch (err) {
+        console.error(err);
+        navigate(AppRoutes.home);
+      }
     };
-    const onJoinRequestReject = () => {
-      alert("tera nam dhokha rakh du, naraz hogi kya...");
-    };
-
-    // TODO: Add peer id
-    socket.emit("requestJoin", roomId, socket.id);
-    socket.on("joinRequestAccept", onJoinRequestAccept);
-    socket.on("joinRequestReject", onJoinRequestReject);
-
-    // Unsubsribe from socket events
-    return () => {
-      socket.off("joinRequestAccept");
-      socket.off("joinRequestReject");
-    };
-  };
+    joinRoomValidation();
+  }, [roomId, user]);
 
   /**
    * @returns unsubscribe function that can be called to
    * unsubbscribe from the events that this function listened to
    */
   const handleSocketListenersForJoinedRoom = () => {
-    if (!roomId) return;
+    if (!roomId || !user) return;
 
     // User has joined the room
-    const newUserConnected = () => {
-      console.log("new user yeyyyy!!");
-    };
+    // First up, inform everyone that he has joined room
+    socket.emit("joinRoom", { email: user.email, roomId });
 
-    socket.emit("joinRoom", { roomId });
+    // Also set up a listener for to listen when someone
+    // else joins the room
+    socket.on("userJoined", params => {
+      console.log(`${params.email} connected...`);
+    });
 
-    socket.on("userConnected", newUserConnected);
+    // Since we just joined up, let us setup peer and
+    // send signal to others by firing off "sendSignal"
+    // when the peer signal will be available :)
+    const peer = new Peer({
+      initiator: true,
+      trickle: false,
+      stream: getMediaStreamFromRef(myVideoStream)
+    });
+
+    peer.on("signal", data => {
+      socket.emit("sendSignal", { signal: data, email: user.email, roomId });
+    });
+
+    peer.on("stream", stream => {
+      console.log("Receiving Stream");
+      if (otherVideoStream.current) {
+        otherVideoStream.current.srcObject = stream;
+      }
+    });
+
+    // We signaled our joining and shared it for peer
+    // connection. Now let's also add some listeners to
+    // listen to someone else signaling when they join
+    socket.on("receiveSignal", params => {
+      const peer = new Peer({
+        initiator: false,
+        trickle: false,
+        stream: getMediaStreamFromRef(myVideoStream)
+      });
+
+      peer.on("signal", data => {
+        // This is for two-way handshake, we now send our signal
+        // and let the process begin.
+        socket.emit("sendPiggyBackSignal", { signal: data, email: user.email, roomId });
+      });
+
+      peer.signal(params.signal);
+    });
+
+    // Last step for two-way handshake where the user
+    // acknowledges the connection and transfers continues
+    // on between peers afterwards
+    socket.on("acknowledgeSignal", params => {
+      peer.signal(params.signal);
+    });
 
     // Unsubscribe from socket listeners
     return () => {
-      socket.off("userConnected");
+      socket.off("userJoined");
+      socket.off("receiveSignal");
+      socket.off("receiveSignal");
+      socket.off("acknowledgeSignal");
     };
   };
 
   useEffect(() => {
-    if (!roomId) return;
-
-    // User don't have the permission to joined room yet
-    if (hasJoinedRoom) {
-      return handleSocketListenersForJoinedRoom();
-    }
-    return handleSocketListenersForNonJoinedRoom();
-  }, [roomId]);
+    if (validated) return handleSocketListenersForJoinedRoom();
+  }, [validated]);
 
   return (
-    <>
-      <MyVideo />
-    </>
+    <div>
+      <MyVideo myVideoStream={myVideoStream} />
+    </div>
   );
 };
 

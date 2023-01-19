@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback, useRef } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import {
   getUserMediaStream,
   removeAllStreams,
@@ -7,10 +7,14 @@ import {
 } from "../../utils/navigator";
 import CustomVideo from "../customVideo";
 
-const MyVideo = () => {
+type Props = {
+  myVideoStream: React.MutableRefObject<HTMLVideoElement | null>;
+};
+
+const MyVideo = (props: Props) => {
   const [isMuted, setIsMuted] = useState(false);
   const [isCameraOff, setIsCameraOff] = useState(false);
-  const myVideoStream = useRef<HTMLVideoElement>(null);
+  const { myVideoStream } = props;
 
   /**
    * @returns a boolean value indicating whether setting the

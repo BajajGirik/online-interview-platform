@@ -2,7 +2,7 @@ import React, { useEffect, useState, createContext } from "react";
 import { UserProfile, UserAuthResponse } from "../types/api";
 import { AppRoutes, LOCAL_STORAGE_KEY } from "../constants";
 import { autoLogin_api } from "../api";
-import { redirect } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 type Props = {
   children: React.ReactNode;
@@ -30,7 +30,7 @@ export const UserContextProvider = ({ children }: Props) => {
   const [isLoading, setIsLoading] = useState(true);
   const [user, setUser] = useState<UserProfile | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
-
+  const navigate = useNavigate();
   const onChangeUser = (apiResponse: UserAuthResponse) => {
     setUser(apiResponse.userProfile);
     localStorage.setItem(LOCAL_STORAGE_KEY, apiResponse.token);
@@ -65,8 +65,8 @@ export const UserContextProvider = ({ children }: Props) => {
 
   useEffect(() => {
     if (isLoading) return;
-    if (!user) redirect(AppRoutes.signIn);
-    if (user) redirect(AppRoutes.home);
+    if (!user) navigate("/signin");
+    if (user) navigate(AppRoutes.home);
   }, [user, isLoading]);
 
   return (

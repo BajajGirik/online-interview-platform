@@ -18,7 +18,15 @@ export const Strings = {
     heading: "Online Interview Platform",
     createRoom: "Create a room",
     logout: "Logout",
-    logoutButtonContent: "user kithe gya"
+    joinRoom: "Join a room",
+    errors: {
+      roomIdEmpty: "Room Id cannot be empty",
+      emailIdEmpty: "Email Id cannot be empyty",
+      createRoomFailed: "Error creating room Id",
+      joinRoomFailed: "Error joining room",
+      notAllowedToJoinRoom: "You are not allowed to join this room",
+      loginToPerformAction: "Please login to perform this action"
+    }
   }
 };
 

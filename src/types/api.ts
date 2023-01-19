@@ -10,10 +10,28 @@ export type UserSignupRequest = UserSigninRequest & {
   confirmPassword: string;
 };
 
+export type CreateRoomRequest = {
+  hostEmail: string;
+  intervieweeEmail: string;
+};
+
+export type JoinRoomRequest = {
+  email: string;
+  roomId: string;
+};
+
 /*********** Response Types ***********/
 export type UserAuthResponse = {
   userProfile: UserProfile;
   token: string;
+};
+
+export type CreateRoomResponse = {
+  roomId: string;
+};
+
+export type JoinRoomResponse = {
+  allowed: boolean;
 };
 
 /*********** Extra Types ***********/
