@@ -1,5 +1,5 @@
 import React, { useContext, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { signin_api, signup_api } from "../../api";
 import { AppRoutes, Strings } from "../../constants";
 import UserContext from "../../context/userContext";
@@ -11,6 +11,7 @@ type Props = {
 };
 
 const AuthForm = ({ signup }: Props) => {
+  const navigate = useNavigate();
   const userContextData = useContext(UserContext);
   const [user, setUser] = useState<UserSignupRequest | UserSigninRequest>({
     email: "",
@@ -29,6 +30,7 @@ const AuthForm = ({ signup }: Props) => {
       if (signup) userData = await signup_api(user as UserSignupRequest);
       else userData = await signin_api(user);
       userContextData.onChangeUser(userData);
+      navigate(AppRoutes.home);
     } catch (error) {
       console.error(error);
     }
