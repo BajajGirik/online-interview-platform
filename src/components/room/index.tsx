@@ -76,13 +76,6 @@ const Room = () => {
       socket.emit("sendSignal", { signal: data, email: user.email, roomId });
     });
 
-    peer.on("stream", stream => {
-      console.log("Receiving Stream");
-      if (otherVideoStream.current) {
-        otherVideoStream.current.srcObject = stream;
-      }
-    });
-
     // We signaled our joining and shared it for peer
     // connection. Now let's also add some listeners to
     // listen to someone else signaling when they join
@@ -100,6 +93,13 @@ const Room = () => {
         socket.emit("sendPiggyBackSignal", { signal: data, email: user.email, roomId });
       });
 
+      peer.on("stream", stream => {
+        console.log("Receiving Stream in receiveSignal");
+        if (otherVideoStream.current) {
+          otherVideoStream.current.srcObject = stream;
+        }
+      });
+
       peer.signal(params.signal);
     });
 
@@ -107,7 +107,15 @@ const Room = () => {
     // acknowledges the connection and transfers continues
     // on between peers afterwards
     socket.on("acknowledgeSignal", params => {
+      console.log("Ack");
       peer.signal(params.signal);
+    });
+
+    peer.on("stream", stream => {
+      console.log("Receiving Stream");
+      if (otherVideoStream.current) {
+        otherVideoStream.current.srcObject = stream;
+      }
     });
 
     // User has joined the room
