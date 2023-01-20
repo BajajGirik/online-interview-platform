@@ -65,8 +65,7 @@ export const UserContextProvider = ({ children }: Props) => {
 
   useEffect(() => {
     if (isLoading) return;
-    if (!user) navigate("/signin");
-    if (user) navigate(AppRoutes.home);
+    if (!user) navigate(AppRoutes.signIn);
   }, [user, isLoading]);
 
   return (

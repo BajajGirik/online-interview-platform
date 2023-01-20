@@ -9,7 +9,6 @@ import UserContext from "../../context/userContext";
 import { AppRoutes, Strings } from "../../constants";
 import { joinRoom_api } from "../../api";
 import { getMediaStreamFromRef } from "../../utils/navigator";
-// import styles from "../"
 
 const Room = () => {
   const { roomId } = useParams();
