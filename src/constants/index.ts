@@ -1,4 +1,5 @@
 export const LOCAL_STORAGE_KEY = "Oip_data";
+export const PeerTimeout = 20000;
 
 export const Strings = {
   authPage: {

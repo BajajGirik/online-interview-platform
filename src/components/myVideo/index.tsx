@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState, useCallback, memo } from "react";
 import {
   getUserMediaStream,
   removeAllStreams,
@@ -8,62 +8,64 @@ import {
 import CustomVideo from "../customVideo";
 
 type Props = {
-  myVideoStream: React.MutableRefObject<HTMLVideoElement | null>;
+  myMediaStream: React.MutableRefObject<HTMLVideoElement | null>;
+  changeMediaStream: (stream: MediaStream | null) => void;
 };
 
-const MyVideo = (props: Props) => {
+const MyVideo = memo((props: Props) => {
   const [isMuted, setIsMuted] = useState(false);
   const [isCameraOff, setIsCameraOff] = useState(false);
-  const { myVideoStream } = props;
+  const { myMediaStream, changeMediaStream } = props;
 
   /**
    * @returns a boolean value indicating whether setting the
    * stream was a success (true) or a failure (false).
    */
-  const setVideoStream = useCallback(async (video: boolean, audio: boolean): Promise<boolean> => {
-    // This case shouldn't hit
-    if (!myVideoStream.current) return false;
+  const setVideoStream = useCallback(
+    async (video: boolean, audio: boolean): Promise<boolean> => {
+      try {
+        const stream = await getUserMediaStream({ video, audio });
+        changeMediaStream(stream);
+        return true;
+      } catch (err) {
+        alert("Unable to get Audio / Video stream");
+        console.log((err as Error).message);
 
-    try {
-      myVideoStream.current.srcObject = await getUserMediaStream({ video, audio });
-      return true;
-    } catch (err) {
-      alert("Unable to get Audio / Video stream");
-      console.log((err as Error).message);
+        changeMediaStream(null);
+        setIsMuted(true);
+        setIsCameraOff(true);
 
-      myVideoStream.current.srcObject = null;
-      setIsMuted(true);
-      setIsCameraOff(true);
-
-      return false;
-    }
-  }, []);
+        return false;
+      }
+    },
+    [changeMediaStream]
+  );
 
   const toggleCamera = useCallback(async () => {
-    if (!myVideoStream.current) return;
+    if (!myMediaStream.current) return;
 
     if (!isCameraOff) {
-      removeVideoStream(myVideoStream.current.srcObject as MediaStream);
+      removeVideoStream(myMediaStream.current.srcObject as MediaStream);
       setIsCameraOff(prev => !prev);
       return;
     }
 
-    removeAllStreams(myVideoStream.current.srcObject as MediaStream);
+    removeAllStreams(myMediaStream.current.srcObject as MediaStream);
     const isSuccessful = await setVideoStream(true, !isMuted);
 
     isSuccessful && setIsCameraOff(prev => !prev);
   }, [isCameraOff, isMuted, setVideoStream]);
 
   const toggleAudio = useCallback(async () => {
-    if (!myVideoStream.current) return;
+    if (!myMediaStream.current) return;
 
     if (!isMuted) {
-      removeAudioStream(myVideoStream.current.srcObject as MediaStream);
+      removeAudioStream(myMediaStream.current.srcObject as MediaStream);
       setIsMuted(prev => !prev);
       return;
     }
 
-    removeAllStreams(myVideoStream.current.srcObject as MediaStream);
+    removeAllStreams(myMediaStream.current.srcObject as MediaStream);
     const isSuccessful = await setVideoStream(!isCameraOff, true);
 
     isSuccessful && setIsMuted(prev => !prev);
@@ -75,7 +77,7 @@ const MyVideo = (props: Props) => {
 
   return (
     <CustomVideo
-      ref={myVideoStream}
+      ref={myMediaStream}
       isMuted={isMuted}
       isCameraOff={isCameraOff}
       toggleMute={toggleAudio}
@@ -83,6 +85,6 @@ const MyVideo = (props: Props) => {
       isSelfVideo
     />
   );
-};
+});
 
 export default MyVideo;
