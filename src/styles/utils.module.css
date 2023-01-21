@@ -1,0 +1,23 @@
+.heading {
+    margin-bottom: var(--standard-spacing);
+}
+
+.input {
+    padding: var(--small-spacing);
+    border-radius: 4px;
+    box-shadow: inset 3px 5px 2px 1px #eee;
+    border: solid 1px #222;
+}
+
+.btn, .btn_danger {
+    color: #eee;
+    background-color: var(--primary-color);
+    font-size: 15px;
+    padding: var(--small-spacing);
+    margin: 0;
+    border-radius: 4px;
+}
+
+.btn_danger {
+	background-color: var(--danger-color);
+}

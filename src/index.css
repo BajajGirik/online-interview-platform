@@ -6,7 +6,7 @@
   --standard-spacing: 16px;
   /* colors */
   --primary-color: #008B8B;
-  --error-color: red;
+  --danger-color: red;
 }
 
 /* universal resets */
@@ -54,6 +54,10 @@ input {
 
 .gap-standard {
   gap: var(--standard-spacing);
+}
+
+.m-bottom-standard {
+	margin-bottom: var(--standard-spacing);
 }
 
 .al-cen {

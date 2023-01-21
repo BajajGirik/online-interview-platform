@@ -1,10 +1,10 @@
 import React, { useContext, useState } from "react";
-// import { v4 as uuid } from "uuid";
 import { useNavigate } from "react-router-dom";
 import { AppRoutes, Strings } from "../../constants";
 import UserContext from "../../context/userContext";
 import { createRoom_api, joinRoom_api } from "../../api";
 import styles from "../../styles/home.module.css";
+import utilityStyles from "../../styles/utils.module.css";
 
 const Home = () => {
   const [roomIdToJoin, setRoomIdToJoin] = useState("");
@@ -50,30 +50,38 @@ const Home = () => {
   };
 
   return (
-    <div className={`flex-col ${styles.home__container}`}>
-      <h1> {Strings.homePage.heading} </h1>
+    <div className={`flex-col al-cen jus-cen gap-standard ${styles.home__container}`}>
+      <h1 className={utilityStyles.heading}> {Strings.homePage.heading} </h1>
 
-      <div className={`flex s${styles.home__roomContainer}`}>
-        <div className={`${styles.home__createJoinRoomContainer} flex-col`}>
+      <div className="flex gap-standard">
+        <div className="flex-col gap-small">
           <input
+            className={utilityStyles.input}
             type="email"
             value={intervieweeEmail}
             onChange={e => setIntervieweeEmail(e.target.value)}
             placeholder="interviewee's email"
           />
-          <button onClick={handleCreateRoom}>{Strings.homePage.createRoom}</button>
+          <button className={utilityStyles.btn} onClick={handleCreateRoom}>
+            {Strings.homePage.createRoom}
+          </button>
         </div>
-        <div className={`${styles.home__createJoinRoomContainer} flex-col`}>
+        <div className="flex-col gap-small">
           <input
+            className={utilityStyles.input}
             type="text"
             value={roomIdToJoin}
             onChange={e => setRoomIdToJoin(e.target.value)}
             placeholder="room id"
           />
-          <button onClick={handleJoinRoom}>{Strings.homePage.joinRoom}</button>
+          <button className={utilityStyles.btn} onClick={handleJoinRoom}>
+            {Strings.homePage.joinRoom}
+          </button>
         </div>
       </div>
-      <button onClick={logout}>{Strings.homePage.logout}</button>
+      <button className={utilityStyles.btn_danger} onClick={logout}>
+        {Strings.homePage.logout}
+      </button>
     </div>
   );
 };

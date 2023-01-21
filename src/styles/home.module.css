@@ -1,16 +1,4 @@
 .home__container {
-    width: 100vw;
+    width: 100%;
     height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-.home__roomContainer {
-    gap: var(--small-spacing);
-    height: 30vh;
-}
-
-.home__createJoinRoomContainer {
-    
 }
