@@ -11,7 +11,7 @@ export const Strings = {
     },
     signUp: "Sign Up",
     signIn: "Sign In",
-    newUser: "New User",
+    newUser: "New User?",
     existingUser: "Existing User?"
   },
   homePage: {
@@ -19,6 +19,10 @@ export const Strings = {
     createRoom: "Create a room",
     logout: "Logout",
     joinRoom: "Join a room",
+    inputPlaceholders: {
+      intervieweEmail: "Interviewee's email",
+      roomId: "Room Id"
+    },
     errors: {
       roomIdEmpty: "Room Id cannot be empty",
       emailIdEmpty: "Email Id cannot be empyty",

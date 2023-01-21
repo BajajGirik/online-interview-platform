@@ -60,7 +60,7 @@ const Home = () => {
             type="email"
             value={intervieweeEmail}
             onChange={e => setIntervieweeEmail(e.target.value)}
-            placeholder="interviewee's email"
+            placeholder={Strings.homePage.inputPlaceholders.intervieweEmail}
           />
           <button className={utilityStyles.btn} onClick={handleCreateRoom}>
             {Strings.homePage.createRoom}
@@ -72,7 +72,7 @@ const Home = () => {
             type="text"
             value={roomIdToJoin}
             onChange={e => setRoomIdToJoin(e.target.value)}
-            placeholder="room id"
+            placeholder={Strings.homePage.inputPlaceholders.roomId}
           />
           <button className={utilityStyles.btn} onClick={handleJoinRoom}>
             {Strings.homePage.joinRoom}
