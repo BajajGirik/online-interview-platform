@@ -3,28 +3,8 @@
 	margin: 20px auto;
 }
 
-.heading {
-    margin-bottom: var(--small-spacing);
-}
-
-.input, .password_container {
-    padding: var(--small-spacing);
-    border-radius: 4px;
-    box-shadow: inset 3px 5px 2px 1px #eee;
-    border: solid 1px #222;
-}
-
 .password_container > input {
     background-color: transparent;
     flex-grow: 1;
     border: none;
-}
-
-.btn_submit {
-    color: #eee;
-    background-color: var(--primary-color);
-    font-size: 15px;
-    padding: var(--small-spacing);
-    margin: var(--small-spacing) 0;
-    border-radius: 4px;
 }

@@ -4,6 +4,7 @@ import { signin_api, signup_api } from "../../api";
 import { AppRoutes, Strings } from "../../constants";
 import UserContext from "../../context/userContext";
 import styles from "../../styles/authForm.module.css";
+import utilityStyles from "../../styles/utils.module.css";
 import { UserSigninRequest, UserSignupRequest } from "../../types/api";
 
 type Props = {
@@ -38,16 +39,16 @@ const AuthForm = ({ signup }: Props) => {
 
   return (
     <div className={styles.container}>
-      <h2 className={`txt-cen ${styles.heading}`}>
+      <h2 className={`txt-cen ${utilityStyles.heading}`}>
         {signup ? Strings.authPage.signUp : Strings.authPage.signIn}
       </h2>
-      <form onSubmit={handleSubmit} className="flex-col gap-small">
+      <form onSubmit={handleSubmit} className="flex-col gap-small m-bottom-standard">
         {signup && (
           <>
             <input
               name="firstName"
               placeholder={Strings.authPage.inputPlaceholders.firstName}
-              className={styles.input}
+              className={utilityStyles.input}
               type="text"
               value={userSignUpInfo.firstName}
               onChange={handleChange}
@@ -56,7 +57,7 @@ const AuthForm = ({ signup }: Props) => {
             <input
               name="lastName"
               placeholder={Strings.authPage.inputPlaceholders.lastName}
-              className={styles.input}
+              className={utilityStyles.input}
               type="text"
               value={userSignUpInfo.lastName}
               onChange={handleChange}
@@ -66,7 +67,7 @@ const AuthForm = ({ signup }: Props) => {
         <input
           name="email"
           placeholder={Strings.authPage.inputPlaceholders.email}
-          className={styles.input}
+          className={utilityStyles.input}
           type="email"
           value={user.email}
           onChange={handleChange}
@@ -86,7 +87,7 @@ const AuthForm = ({ signup }: Props) => {
             onChange={handleChange}
           />
         )}
-        <button type="submit" className={styles.btn_submit}>
+        <button type="submit" className={utilityStyles.btn}>
           {signup ? "Sign Up" : "Sign In"}
         </button>
       </form>
@@ -115,7 +116,7 @@ const PasswordInputField = ({ name, placeholder, value, onChange }: PasswordInpu
   const [showPassword, setShowPassword] = useState(false);
   const toggleShowPassword = () => setShowPassword(prev => !prev);
   return (
-    <div className={`flex gap-small ${styles.password_container}`}>
+    <div className={`flex gap-small ${utilityStyles.input} ${styles.password_container}`}>
       <input
         name={name}
         placeholder={placeholder}
