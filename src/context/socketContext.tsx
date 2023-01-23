@@ -2,37 +2,96 @@ import React, { createContext, useState, useRef, useEffect } from "react";
 import { io } from "socket.io-client";
 import Peer from "simple-peer";
 
-const SocketContext = createContext(null);
-
 // const socket = io('http://localhost:5000');
-const socket = io(process.env.REACT_APP_BACKEND_URL);
+const socket = io(process.env.REACT_APP_BACKEND_URL || "");
+
 type Props = {
   children: React.ReactNode;
 };
 
-const ContextProvider = ({ children }) => {
+type CallType = {
+  from: string;
+  isReceivingCall: boolean;
+  name: string;
+  callerName: string;
+  signal: any;
+};
+
+type SocketContextType = {
+  call: any;
+  callAccepted: boolean;
+  myVideo: any;
+  userVideo: any;
+  stream: any;
+  name: string;
+  setNameUtility: any;
+  callEnded: boolean;
+  me: string;
+  callUser: any;
+  leaveCall: () => void;
+  answerCall: () => void;
+};
+
+const defaultSocketContextValues = {
+  call: {},
+  callAccepted: false,
+  myVideo: null,
+  userVideo: null,
+  stream: null,
+  name: "",
+  setNameUtility: () => {},
+  callEnded: true,
+  me: "",
+  callUser: {
+    from: "",
+    isReceivingCall: false,
+    name: "",
+    callerName: "",
+    signal: null
+  },
+  leaveCall: () => {},
+  answerCall: () => {}
+};
+
+const SocketContext = createContext<SocketContextType>(defaultSocketContextValues);
+
+const SocketContextProvider = ({ children }: Props) => {
   const [callAccepted, setCallAccepted] = useState(false);
   const [callEnded, setCallEnded] = useState(false);
-  const [stream, setStream] = useState();
+  const [stream, setStream] = useState<MediaStream>();
   const [name, setName] = useState("");
-  const [call, setCall] = useState({});
+  const [call, setCall] = useState<CallType>({
+    isReceivingCall: false,
+    from: "",
+    name: "",
+    callerName: "",
+    signal: null
+  });
   const [me, setMe] = useState("");
 
-  const myVideo = useRef();
-  const userVideo = useRef();
-  const connectionRef = useRef();
+  const myVideo = useRef<HTMLVideoElement>();
+  const userVideo = useRef<HTMLVideoElement>();
+  const connectionRef = useRef<Peer.Instance>();
+
+  const setNameUtility = (newName: string) => {
+    setName(newName);
+  };
 
   useEffect(() => {
-    navigator.mediaDevices.getUserMedia({ video: true, audio: true }).then(currentStream => {
-      setStream(currentStream);
-
-      myVideo.current.srcObject = currentStream;
-    });
+    navigator.mediaDevices
+      .getUserMedia({ video: true, audio: true })
+      .then(currentStream => {
+        setStream(currentStream);
+        if (myVideo.current) myVideo.current.srcObject = currentStream;
+      })
+      .catch(err => {
+        console.log(err);
+      });
 
     socket.on("me", id => setMe(id));
 
     socket.on("callUser", ({ from, name: callerName, signal }) => {
-      setCall({ isReceivingCall: true, from, name: callerName, signal });
+      setCall({ isReceivingCall: true, from, name: callerName, signal } as CallType);
     });
   }, []);
 
@@ -46,7 +105,7 @@ const ContextProvider = ({ children }) => {
     });
 
     peer.on("stream", currentStream => {
-      userVideo.current.srcObject = currentStream;
+      if (userVideo.current) userVideo.current.srcObject = currentStream;
     });
 
     peer.signal(call.signal);
@@ -54,7 +113,7 @@ const ContextProvider = ({ children }) => {
     connectionRef.current = peer;
   };
 
-  const callUser = id => {
+  const callUser = (id: string) => {
     const peer = new Peer({ initiator: true, trickle: false, stream });
 
     peer.on("signal", data => {
@@ -62,7 +121,7 @@ const ContextProvider = ({ children }) => {
     });
 
     peer.on("stream", currentStream => {
-      userVideo.current.srcObject = currentStream;
+      if (userVideo.current) userVideo.current.srcObject = currentStream;
     });
 
     socket.on("callAccepted", signal => {
@@ -77,7 +136,7 @@ const ContextProvider = ({ children }) => {
   const leaveCall = () => {
     setCallEnded(true);
 
-    connectionRef.current.destroy();
+    if (connectionRef.current) connectionRef.current.destroy();
 
     window.location.reload();
   };
@@ -91,7 +150,7 @@ const ContextProvider = ({ children }) => {
         userVideo,
         stream,
         name,
-        setName,
+        setNameUtility,
         callEnded,
         me,
         callUser,
@@ -104,4 +163,4 @@ const ContextProvider = ({ children }) => {
   );
 };
 
-export { ContextProvider, SocketContext };
+export { SocketContextProvider, SocketContext };

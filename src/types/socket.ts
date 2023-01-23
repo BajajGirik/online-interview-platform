@@ -19,6 +19,9 @@ export type ClientToServerEvents = {
   sendSignal: (params: SendSignalParamsType) => void;
 
   sendPiggyBackSignal: (params: PiggyBackParamsType) => void;
+
+  callUser: (params: ClientToServerCallUserType) => void;
+  answerCall: (params: { data: any }) => void;
 };
 
 /**
@@ -41,6 +44,11 @@ export type ServerToClientEvents = {
   receiveSignal: (params: ReceiverSignalParamsType) => void;
 
   acknowledgeSignal: (params: AcknowledgeSignalParamsType) => void;
+
+  me: (parames: string) => void;
+  callEnded: () => void;
+  callUser: (params: ServerToClientCallUserType) => void;
+  callAccepted: (params: { signal: any }) => void;
 };
 
 /************** Types for listeners parameters ******************/
@@ -71,3 +79,16 @@ export type ReceiverSignalParamsType = {
 export type PiggyBackParamsType = SendSignalParamsType;
 
 export type AcknowledgeSignalParamsType = ReceiverSignalParamsType;
+
+export type ClientToServerCallUserType = {
+  userToCall: string;
+  signalData: any;
+  callFrom: any;
+  name: string;
+};
+
+export type ServerToClientCallUserType = {
+  signal: any;
+  callFrom: any;
+  name: string;
+};

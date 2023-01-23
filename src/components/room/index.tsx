@@ -68,7 +68,8 @@ const Room = () => {
     const peer = new Peer({
       initiator: true,
       trickle: false,
-      stream: getMediaStreamFromRef(myVideoStream)
+      stream: getMediaStreamFromRef(myVideoStream),
+      iceCompleteTimeout: 20000
     });
 
     peer.on("signal", data => {
@@ -84,7 +85,8 @@ const Room = () => {
       const peer = new Peer({
         initiator: false,
         trickle: false,
-        stream: getMediaStreamFromRef(myVideoStream)
+        stream: getMediaStreamFromRef(myVideoStream),
+        iceCompleteTimeout: 20000
       });
 
       peer.on("signal", data => {
