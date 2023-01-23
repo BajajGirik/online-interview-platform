@@ -24,8 +24,8 @@ const Room = () => {
   const { roomId } = useParams();
   const { user, isLoading } = useContext(UserContext);
   const navigate = useNavigate();
-  const initiatorPeer = useRef<Instance | undefined>(undefined);
-  const receiverPeer = useRef<Instance | undefined>(undefined);
+  const peerConnRef = useRef<Instance | undefined>(undefined);
+  const peerConnRef2 = useRef<Instance | undefined>(undefined);
   const myVideoStream = useRef<HTMLVideoElement>(null);
   const otherVideoStream = useRef<HTMLVideoElement>(null);
 
@@ -42,13 +42,6 @@ const Room = () => {
       socket.emit("sendSignal", { signal: data, email: user.email, roomId });
     });
 
-    // Last step for two-way handshake where the user
-    // acknowledges the connection and transfers continues
-    // on between peers afterwards
-    socket.on("acknowledgeSignal", params => {
-      peer.signal(params.signal);
-    });
-
     peer.on("stream", remoteStream => {
       if (otherVideoStream.current) {
         otherVideoStream.current.srcObject = remoteStream;
@@ -60,6 +53,14 @@ const Room = () => {
         video.play();
       }
     });
+
+    // Last step for two-way handshake where the user
+    // acknowledges the connection and transfers continues
+    // on between peers afterwards
+    socket.on("acknowledgeSignal", params => {
+      peer.signal(params.signal);
+    });
+
     return peer;
   }, [user, roomId, userAllowedToJoin]);
 
@@ -104,10 +105,7 @@ const Room = () => {
    */
   const handleSocketListenersForJoinedRoom = React.useCallback(() => {
     if (!roomId || !user || !userAllowedToJoin) return;
-
-    // User has joined the room
-    // First up, inform everyone that he has joined room
-    socket.emit("joinRoom", { email: user.email, roomId });
+    console.log("Handle Socket Listeners");
 
     // Set up a listener for to listen when someone
     // else joins the room
@@ -115,16 +113,10 @@ const Room = () => {
       console.log(`${params.email} connected...`);
     });
 
-    if (!initiatorPeer.current) {
-      // call and let the other user now that you have joined the room
-      initiatorPeer.current = callUser();
-    }
-
     socket.on("receiveSignal", params => {
       // listener for receiving calls
-      if (!receiverPeer.current) {
-        receiverPeer.current = acceptCall(params);
-      }
+      // peerConnRef.current?.destroy();
+      peerConnRef.current = acceptCall(params);
     });
 
     // Unsubscribe from socket listeners
@@ -133,7 +125,7 @@ const Room = () => {
       socket.off("receiveSignal");
       socket.off("acknowledgeSignal");
     };
-  }, [roomId, user, callUser, acceptCall, userAllowedToJoin]);
+  }, [roomId, user, acceptCall, userAllowedToJoin]);
 
   const changeVideoStream = React.useCallback((stream: MediaStream | null) => {
     if (myVideoStream.current) {
@@ -186,21 +178,23 @@ const Room = () => {
       try {
         myStream = await getUserMediaStream({ video: true, audio: true });
         changeVideoStream(myStream);
-        return handleSocketListenersForJoinedRoom();
       } catch (err) {
-        alert("Something is wrong with media stream");
+        alert((err as Error).message);
         console.error(err);
+      } finally {
+        // User has joined the room
+        // First up, inform everyone that he has joined room
+        socket.emit("joinRoom", { email: user!.email, roomId: roomId! });
+        // peerConnRef.current?.destroy();
+        // call and let the other user now that you have joined the room
+        peerConnRef2.current = callUser();
       }
     }
 
-    let unsubscribe: Promise<(() => void) | undefined> | undefined = undefined;
-    if (userAllowedToJoin && user && roomId && !isLoading) unsubscribe = init();
-
-    return () => {
-      unsubscribe
-        ?.then(removeSocketListeners => removeSocketListeners?.())
-        .catch(err => console.error(err));
-    };
+    if (userAllowedToJoin && user && roomId && !isLoading) {
+      init();
+      return handleSocketListenersForJoinedRoom();
+    }
   }, [
     userAllowedToJoin,
     user,
@@ -215,12 +209,11 @@ const Room = () => {
    * the component unmounts due to any reason.
    * TODO: Add socket disconnect logic as well
    */
-  useEffect(() => {
+  /* useEffect(() => {
     return () => {
-      initiatorPeer.current?.destroy();
-      receiverPeer.current?.destroy();
+      peerConnRef.current?.destroy();
     };
-  }, []);
+  }, []); */
 
   return (
     <div id="vid-container" className="flex gap-standard">
