@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback, memo } from "react";
+import React, { useState, useCallback, memo } from "react";
 import {
   getUserMediaStream,
   removeAllStreams,
@@ -70,10 +70,6 @@ const MyVideo = memo((props: Props) => {
 
     isSuccessful && setIsMuted(prev => !prev);
   }, [isCameraOff, isMuted, setVideoStream]);
-
-  useEffect(() => {
-    setVideoStream(true, true);
-  }, [setVideoStream]);
 
   return (
     <CustomVideo
